@@ -1,0 +1,41 @@
+/* Reading view: strip tag appearance (only in content, not properties) */
+.markdown-reading-view .markdown-preview-section a.tag {
+	color: inherit !important;
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+	font-size: inherit !important;
+	font-weight: inherit !important;
+	pointer-events: none !important;
+	cursor: text !important;
+	text-decoration: none !important;
+}
+
+/* Live-preview: strip tag appearance in editor content lines */
+.markdown-source-view .cm-line .cm-hashtag {
+	color: inherit !important;
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+	font-size: inherit !important;
+	font-weight: inherit !important;
+	pointer-events: none !important;
+	cursor: text !important;
+	border-radius: 0 !important;
+}
+
+.markdown-source-view .cm-line .cm-hashtag-begin {
+	color: inherit !important;
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+}
+
+.markdown-source-view .cm-line .cm-hashtag-end {
+	color: inherit !important;
+	background: none !important;
+	border: none !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
+}

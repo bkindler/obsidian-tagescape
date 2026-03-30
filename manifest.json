@@ -1,0 +1,9 @@
+{
+	"id": "tagescape",
+	"name": "Tagescape",
+	"version": "1.0.0",
+	"minAppVersion": "1.0.0",
+	"description": "Suppresses inline tag recognition in body text. Only tags in frontmatter properties are kept.",
+	"author": "Björn Kindler",
+	"isDesktopOnly": false
+}
