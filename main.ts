@@ -20,16 +20,16 @@ function suppressTagClick(evt: MouseEvent) {
 }
 
 export default class TagescapePlugin extends Plugin {
-	onload() {
+	onload = () => {
 		this.registerReadingViewHandler();
 		this.registerPostProcessor();
 		this.patchMetadataCache();
-	}
+	};
 
-	onunload() {
+	onunload = () => {
 		this.unpatchMetadataCache();
 		document.removeEventListener("click", suppressTagClick, true);
-	}
+	};
 
 	private patchMetadataCache() {
 		const extCache = this.app.metadataCache as MetadataCacheWithTags;

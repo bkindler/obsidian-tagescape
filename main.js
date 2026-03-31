@@ -36,14 +36,17 @@ function suppressTagClick(evt) {
   }
 }
 var TagescapePlugin = class extends import_obsidian.Plugin {
-  onload() {
-    this.registerReadingViewHandler();
-    this.registerPostProcessor();
-    this.patchMetadataCache();
-  }
-  onunload() {
-    this.unpatchMetadataCache();
-    document.removeEventListener("click", suppressTagClick, true);
+  constructor() {
+    super(...arguments);
+    this.onload = () => {
+      this.registerReadingViewHandler();
+      this.registerPostProcessor();
+      this.patchMetadataCache();
+    };
+    this.onunload = () => {
+      this.unpatchMetadataCache();
+      document.removeEventListener("click", suppressTagClick, true);
+    };
   }
   patchMetadataCache() {
     const extCache = this.app.metadataCache;
