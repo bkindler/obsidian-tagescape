@@ -31,7 +31,7 @@ export default class TagescapePlugin extends Plugin {
 		document.removeEventListener("click", suppressTagClick, true);
 	};
 
-	private patchMetadataCache() {
+	private patchMetadataCache = () => {
 		const extCache = this.app.metadataCache as MetadataCacheWithTags;
 		const origGetFileCache = extCache.getFileCache;
 
@@ -89,7 +89,7 @@ export default class TagescapePlugin extends Plugin {
 		}
 	}
 
-	private unpatchMetadataCache() {
+	private unpatchMetadataCache = () => {
 		const extCache = this.app.metadataCache as MetadataCacheWithTags;
 		if (extCache._origGetFileCache) {
 			extCache.getFileCache = extCache._origGetFileCache;
@@ -101,7 +101,7 @@ export default class TagescapePlugin extends Plugin {
 		}
 	}
 
-	private registerPostProcessor() {
+	private registerPostProcessor = () => {
 		this.registerMarkdownPostProcessor((el: HTMLElement) => {
 			const tagLinks = el.querySelectorAll("a.tag");
 			tagLinks.forEach((link) => {
@@ -115,7 +115,7 @@ export default class TagescapePlugin extends Plugin {
 		});
 	}
 
-	private registerReadingViewHandler() {
+	private registerReadingViewHandler = () => {
 		document.addEventListener("click", suppressTagClick, true);
 	}
 }

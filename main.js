@@ -47,83 +47,83 @@ var TagescapePlugin = class extends import_obsidian.Plugin {
       this.unpatchMetadataCache();
       document.removeEventListener("click", suppressTagClick, true);
     };
-  }
-  patchMetadataCache() {
-    const extCache = this.app.metadataCache;
-    const origGetFileCache = extCache.getFileCache;
-    extCache._origGetFileCache = origGetFileCache;
-    extCache.getFileCache = function(file) {
-      const result = origGetFileCache.call(extCache, file);
-      if (!result)
+    this.patchMetadataCache = () => {
+      const extCache = this.app.metadataCache;
+      const origGetFileCache = extCache.getFileCache;
+      extCache._origGetFileCache = origGetFileCache;
+      extCache.getFileCache = function(file) {
+        const result = origGetFileCache.call(extCache, file);
+        if (!result)
+          return result;
+        if (result.tags) {
+          const patched = { ...result };
+          delete patched.tags;
+          return patched;
+        }
         return result;
-      if (result.tags) {
-        const patched = { ...result };
-        delete patched.tags;
-        return patched;
-      }
-      return result;
-    };
-    if (typeof extCache.getTags === "function") {
-      const origGetTags = extCache.getTags;
-      const vault = this.app.vault;
-      extCache._origGetTags = origGetTags;
-      extCache.getTags = function() {
-        const frontmatterOnly = {};
-        const files = vault.getMarkdownFiles();
-        for (const file of files) {
-          const meta = origGetFileCache.call(extCache, file);
-          if (!(meta == null ? void 0 : meta.frontmatter))
-            continue;
-          const fmTags = [];
-          for (const key of ["tags", "tag"]) {
-            const raw = meta.frontmatter[key];
-            if (!raw)
+      };
+      if (typeof extCache.getTags === "function") {
+        const origGetTags = extCache.getTags;
+        const vault = this.app.vault;
+        extCache._origGetTags = origGetTags;
+        extCache.getTags = function() {
+          const frontmatterOnly = {};
+          const files = vault.getMarkdownFiles();
+          for (const file of files) {
+            const meta = origGetFileCache.call(extCache, file);
+            if (!(meta == null ? void 0 : meta.frontmatter))
               continue;
-            if (Array.isArray(raw)) {
-              for (const item of raw) {
-                if (typeof item === "string")
-                  fmTags.push(item);
+            const fmTags = [];
+            for (const key of ["tags", "tag"]) {
+              const raw = meta.frontmatter[key];
+              if (!raw)
+                continue;
+              if (Array.isArray(raw)) {
+                for (const item of raw) {
+                  if (typeof item === "string")
+                    fmTags.push(item);
+                }
+              } else if (typeof raw === "string") {
+                fmTags.push(...raw.split(",").map((t) => t.trim()));
               }
-            } else if (typeof raw === "string") {
-              fmTags.push(...raw.split(",").map((t) => t.trim()));
+            }
+            for (const t of fmTags) {
+              if (!t)
+                continue;
+              const normalized = t.startsWith("#") ? t : `#${t}`;
+              frontmatterOnly[normalized] = (frontmatterOnly[normalized] || 0) + 1;
             }
           }
-          for (const t of fmTags) {
-            if (!t)
-              continue;
-            const normalized = t.startsWith("#") ? t : `#${t}`;
-            frontmatterOnly[normalized] = (frontmatterOnly[normalized] || 0) + 1;
+          return frontmatterOnly;
+        };
+      }
+    };
+    this.unpatchMetadataCache = () => {
+      const extCache = this.app.metadataCache;
+      if (extCache._origGetFileCache) {
+        extCache.getFileCache = extCache._origGetFileCache;
+        delete extCache._origGetFileCache;
+      }
+      if (extCache._origGetTags) {
+        extCache.getTags = extCache._origGetTags;
+        delete extCache._origGetTags;
+      }
+    };
+    this.registerPostProcessor = () => {
+      this.registerMarkdownPostProcessor((el) => {
+        const tagLinks = el.querySelectorAll("a.tag");
+        tagLinks.forEach((link) => {
+          if (link.closest(".metadata-container") || link.closest(".metadata-property")) {
+            return;
           }
-        }
-        return frontmatterOnly;
-      };
-    }
-  }
-  unpatchMetadataCache() {
-    const extCache = this.app.metadataCache;
-    if (extCache._origGetFileCache) {
-      extCache.getFileCache = extCache._origGetFileCache;
-      delete extCache._origGetFileCache;
-    }
-    if (extCache._origGetTags) {
-      extCache.getTags = extCache._origGetTags;
-      delete extCache._origGetTags;
-    }
-  }
-  registerPostProcessor() {
-    this.registerMarkdownPostProcessor((el) => {
-      const tagLinks = el.querySelectorAll("a.tag");
-      tagLinks.forEach((link) => {
-        if (link.closest(".metadata-container") || link.closest(".metadata-property")) {
-          return;
-        }
-        const span = createSpan();
-        span.textContent = link.textContent;
-        link.replaceWith(span);
+          const span = createSpan();
+          span.textContent = link.textContent;
+          link.replaceWith(span);
+        });
       });
-    });
-  }
-  registerReadingViewHandler() {
-    document.addEventListener("click", suppressTagClick, true);
+    };
+    this.registerReadingViewHandler = () => {
+      document.addEventListener("click", suppressTagClick, true);
+    };
   }
 };
