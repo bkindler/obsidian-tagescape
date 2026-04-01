@@ -33,14 +33,14 @@ export default class TagescapePlugin extends Plugin {
 
 	private patchMetadataCache = () => {
 		const extCache = this.app.metadataCache as MetadataCacheWithTags;
-		const origGetFileCache = extCache.getFileCache;
+		const origGetFileCache = extCache.getFileCache.bind(extCache);
 
 		// Store original for restoration
-		extCache._origGetFileCache = origGetFileCache;
+		extCache._origGetFileCache = extCache.getFileCache;
 
 		// Patch getFileCache to strip inline tags
 		extCache.getFileCache = (file: TFile): CachedMetadata | null => {
-			const result = origGetFileCache.call(extCache, file);
+			const result = origGetFileCache(file);
 			if (!result) return result;
 
 			if (result.tags) {
@@ -54,15 +54,15 @@ export default class TagescapePlugin extends Plugin {
 
 		// Patch getTags to only count frontmatter tags
 		if (typeof extCache.getTags === "function") {
-			const origGetTags = extCache.getTags;
+			const origGetTags = extCache.getTags.bind(extCache);
 			const vault = this.app.vault;
-			extCache._origGetTags = origGetTags;
+			extCache._origGetTags = extCache.getTags;
 
 			extCache.getTags = (): Record<string, number> => {
 				const frontmatterOnly: Record<string, number> = {};
 				const files = vault.getMarkdownFiles();
 				for (const file of files) {
-					const meta = origGetFileCache.call(extCache, file);
+					const meta = origGetFileCache(file);
 					if (!meta?.frontmatter) continue;
 
 					const fmTags: string[] = [];
