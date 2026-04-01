@@ -39,7 +39,7 @@ export default class TagescapePlugin extends Plugin {
 		extCache._origGetFileCache = origGetFileCache;
 
 		// Patch getFileCache to strip inline tags
-		extCache.getFileCache = function (file: TFile): CachedMetadata | null {
+		extCache.getFileCache = (file: TFile): CachedMetadata | null => {
 			const result = origGetFileCache.call(extCache, file);
 			if (!result) return result;
 
@@ -58,7 +58,7 @@ export default class TagescapePlugin extends Plugin {
 			const vault = this.app.vault;
 			extCache._origGetTags = origGetTags;
 
-			extCache.getTags = function (): Record<string, number> {
+			extCache.getTags = (): Record<string, number> => {
 				const frontmatterOnly: Record<string, number> = {};
 				const files = vault.getMarkdownFiles();
 				for (const file of files) {

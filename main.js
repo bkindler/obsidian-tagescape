@@ -51,7 +51,7 @@ var TagescapePlugin = class extends import_obsidian.Plugin {
       const extCache = this.app.metadataCache;
       const origGetFileCache = extCache.getFileCache;
       extCache._origGetFileCache = origGetFileCache;
-      extCache.getFileCache = function(file) {
+      extCache.getFileCache = (file) => {
         const result = origGetFileCache.call(extCache, file);
         if (!result)
           return result;
@@ -66,7 +66,7 @@ var TagescapePlugin = class extends import_obsidian.Plugin {
         const origGetTags = extCache.getTags;
         const vault = this.app.vault;
         extCache._origGetTags = origGetTags;
-        extCache.getTags = function() {
+        extCache.getTags = () => {
           const frontmatterOnly = {};
           const files = vault.getMarkdownFiles();
           for (const file of files) {
