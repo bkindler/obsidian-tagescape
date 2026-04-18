@@ -36,7 +36,7 @@ export default class TagescapePlugin extends Plugin {
 		const origGetFileCache = extCache.getFileCache.bind(extCache);
 
 		// Store original for restoration
-		extCache._origGetFileCache = extCache.getFileCache;
+		extCache._origGetFileCache = origGetFileCache;
 
 		// Patch getFileCache to strip inline tags
 		extCache.getFileCache = (file: TFile): CachedMetadata | null => {
@@ -54,9 +54,8 @@ export default class TagescapePlugin extends Plugin {
 
 		// Patch getTags to only count frontmatter tags
 		if (typeof extCache.getTags === "function") {
-			const origGetTags = extCache.getTags.bind(extCache);
 			const vault = this.app.vault;
-			extCache._origGetTags = extCache.getTags;
+			extCache._origGetTags = extCache.getTags.bind(extCache);
 
 			extCache.getTags = (): Record<string, number> => {
 				const frontmatterOnly: Record<string, number> = {};
